@@ -31,9 +31,24 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Google API
 	//implementation 'org.springframework.ai:spring-ai-google-ai-spring-boot-starter'
 	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
 	
+	// Spring AI Postgres (pgvector)
+    implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
+    implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
+    
+    // Embedding
+    implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+    
+    // Document Loader
+    implementation 'org.springframework.ai:spring-ai-tika-document-reader'
+    // org.springframework.ai:spring-ai-pdf-document-reader
+    
+    // 데이터베이스 드라이버
+    runtimeOnly 'org.postgresql:postgresql'
+    
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

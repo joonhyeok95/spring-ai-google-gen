@@ -1,6 +1,22 @@
 spring:
   application:
     name: "googel-gen-ai-spring"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aidb
+    username: myuser
+    password: mypassword
+  ai:
+    vectorstore:
+      pgvector:
+        # index-type: HNSW      # 대규모 검색에 효율적인 인덱스 방식
+        dimension: 768        # Gemini Embedding 모델의 기본 차원 (모델에 따라 확인 필요)
+        collection-name: spring_pdf_rag
+    ollama:
+      base-url: http://localhost:11434
+      embedding:
+        options:
+          model: all-minilm
+# 왜인지 gemenai 가 configuration 이 안맞아서 custom 으로함
 ai:
   api-key: ${GOOGLE_API_KEY:missing_key}
   model: gemini-3.1-flash-lite-preview # 3.1-flash-lite-preview가 안될 경우를 대비해 안정 버전 권장
