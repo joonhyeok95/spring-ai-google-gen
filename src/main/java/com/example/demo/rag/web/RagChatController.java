@@ -1,5 +1,6 @@
 package com.example.demo.rag.web;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.rag.service.RagChatService;
 
 @RestController
+@CrossOrigin(origins = "*") // 테스트용으로 전체 허용
 public class RagChatController {
 
     private final RagChatService ragChatService;
