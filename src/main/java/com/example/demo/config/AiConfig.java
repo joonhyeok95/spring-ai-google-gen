@@ -8,6 +8,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.retry.support.RetryTemplate;
 
 import com.google.genai.Client;
@@ -37,6 +38,7 @@ public class AiConfig {
     }
     
     @Bean
+    @Primary
     public GoogleGenAiChatModel googleGenAiChatModel(
             Client googleGenAiClient,
             ObjectProvider<ToolCallingManager> toolCallingManager,
