@@ -30,7 +30,7 @@ ext {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// Google API
 	//implementation 'org.springframework.ai:spring-ai-google-ai-spring-boot-starter'
 	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
@@ -45,6 +45,10 @@ dependencies {
     // Document Loader
     implementation 'org.springframework.ai:spring-ai-tika-document-reader'
     // org.springframework.ai:spring-ai-pdf-document-reader
+    
+    // web resources
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    
     
     // 데이터베이스 드라이버
     runtimeOnly 'org.postgresql:postgresql'
