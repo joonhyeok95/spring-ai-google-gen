@@ -18,11 +18,11 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    // web:동기
-    @GetMapping("/ai/chat")
-    public String chat(@RequestParam(value = "message") String message) {
-        return chatService.generateResponse(message);
-    }
+//    // web:동기
+//    @GetMapping("/ai/chat")
+//    public String chat(@RequestParam(value = "message") String message) {
+//        return chatService.generateResponse(message);
+//    }
     
     // webflux:비동기
     @GetMapping(value = "/ai/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

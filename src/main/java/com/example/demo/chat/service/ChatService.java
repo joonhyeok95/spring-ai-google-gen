@@ -1,6 +1,7 @@
 package com.example.demo.chat.service;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ChatService {
 		// TODO Auto-generated method stub
 		return chatClient.prompt()
 	            .user(message)
+	            .advisors(advisor -> advisor.param("chat_memory_conversation_id", chatId))
 	            .stream() // 핵심: 비동기 스트림 시작
 	            .content(); // Flux<String> 타입으로 변환
 	}

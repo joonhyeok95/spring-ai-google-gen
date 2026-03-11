@@ -1,5 +1,10 @@
 package com.example.demo.config;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatModel;
 import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
@@ -7,6 +12,7 @@ import org.springframework.ai.google.genai.GoogleGenAiEmbeddingConnectionDetails
 import org.springframework.ai.google.genai.text.GoogleGenAiTextEmbeddingModel;
 import org.springframework.ai.google.genai.text.GoogleGenAiTextEmbeddingOptions;
 import org.springframework.ai.model.tool.ToolCallingManager;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,10 +33,20 @@ public class AiConfig {
 	private final AiProperties aiProperties;
 	
 	@Bean
-    public ChatClient chatClient(GoogleGenAiChatModel chatModel, VectorStore vectorStore) {
+    public ChatClient chatClient(GoogleGenAiChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
 		
         return ChatClient.builder(chatModel)
                 .defaultSystem(aiProperties.getDefaultSystem())
+                .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore)
+                		.searchRequest(SearchRequest.builder()
+                				.topK(3).build())
+                		.build(),
+                		MessageChatMemoryAdvisor.builder(chatMemory)
+                		.conversationId("default")
+                        .order(1)
+//                        .scheduler(null)
+                        .build()
+        		)
                 .build();
     }
     
@@ -38,6 +54,20 @@ public class AiConfig {
     public Client googleGenAiClient() {
         return Client.builder()
                 .apiKey(aiProperties.getApiKey())
+                .build();
+    }
+ // 1. 대화 저장소 빈 등록 (Memory 상에 저장)
+    @Bean
+    public InMemoryChatMemoryRepository chatMemoryRepository() {
+        return new InMemoryChatMemoryRepository();
+    }
+ // 2. ChatMemory 인터페이스 구현체 등록
+    @Bean
+    public ChatMemory chatMemory(InMemoryChatMemoryRepository repository) {
+        // MessageWindowChatMemory는 최근 N개의 대화만 유지하는 윈도우 방식을 지원합니다.
+        return MessageWindowChatMemory.builder()
+        		.chatMemoryRepository(repository)
+        		.maxMessages(20)
                 .build();
     }
     
