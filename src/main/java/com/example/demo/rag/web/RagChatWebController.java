@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.example.demo.rag.service.RagChatService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 
+@Slf4j
 @Controller
 @RequestMapping("/rag")
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class RagChatWebController {
     @ResponseBody // HTML이 아닌 데이터를 반환
     public Flux<String> chatStream(@RequestParam(name = "chatId") String chatId, 
     								@RequestParam(name = "message") String message) {
-        return RagChatService.askStream(message);
+    	log.info("rag stream controller: chatId:{}", chatId);
+        return RagChatService.askStream(chatId, message);
     }
 }

@@ -28,6 +28,7 @@ public class ChatWebController {
     @ResponseBody // HTML이 아닌 데이터를 반환
     public Flux<String> chatStream(@RequestParam(name = "chatId") String chatId, 
     								@RequestParam(name = "message") String message) {
+    	System.out.println("요청된 chatId: " + chatId);
         return chatService.askStream(chatId, message);
     }
 }

@@ -22,6 +22,7 @@ public class RagChatService {
 
  // Builder를 주입받아 필요할 때마다 ChatClient를 찍어냅니다.
     private final ChatClient.Builder chatClientBuilder;
+    private final ChatClient chatClient;
     private final VectorStore vectorStore;
 
     public String ask(String message) {
@@ -56,7 +57,7 @@ public class RagChatService {
     	        .call()
     	        .content();
     }
-    public Flux<String> askStream(String message) {
+    public Flux<String> askStream(String chatId, String message) {
         // 1. 유사 문서 검색 (Blocking 작업을 Flux 흐름으로 변환)
         return Mono.fromCallable(() -> {
                     SearchRequest searchRequest = SearchRequest.builder()
@@ -81,15 +82,21 @@ public class RagChatService {
                             참고 정보:
                             {context}
                             """;
-
-                    // 3. ChatClient 스트리밍 호출
-                    return chatClientBuilder
-                            .build()
-                            .prompt()
+                    return chatClient.prompt()
+                            .advisors(advisor -> advisor.param("chat_memory_conversation_id", chatId))
                             .system(sp -> sp.text(ragPromptText).param("context", context))
-                            .user(message + " 위 내용을 바탕으로 대답해줘.")
-                            .stream() // call() 대신 stream() 사용!
+                            .user(message) 
+                            .stream()
                             .content();
+                    // 3. ChatClient 스트리밍 호출
+//                    return chatClientBuilder
+//                            .build()
+//                            .prompt()
+//            	            .advisors(advisor -> advisor.param("chat_memory_conversation_id", chatId))
+//                            .system(sp -> sp.text(ragPromptText).param("context", context))
+//                            .user(message + " 위 내용을 바탕으로 대답해줘.")
+//                            .stream() // call() 대신 stream() 사용!
+//                            .content();
                 });
     }
 }

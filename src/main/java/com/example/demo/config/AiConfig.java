@@ -31,9 +31,29 @@ import lombok.RequiredArgsConstructor;
 @EnableConfigurationProperties(AiProperties.class)
 public class AiConfig {
 	private final AiProperties aiProperties;
-	
+
 	@Bean
-    public ChatClient chatClient(GoogleGenAiChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
+    public ChatClient chatClientSimple(GoogleGenAiChatModel chatModel, CustomRedisChatMemoryRepository chatMemoryRepository) {
+		
+        return ChatClient.builder(chatModel)
+                .defaultSystem(aiProperties.getDefaultSystem())
+                .defaultAdvisors(
+                		MessageChatMemoryAdvisor.builder(
+                				MessageWindowChatMemory.builder()
+                        		.chatMemoryRepository(chatMemoryRepository)
+                        		.maxMessages(20)
+                                .build()
+            					)
+                		.conversationId("default")
+                        .order(1)
+                        .build()
+        		)
+                .build();
+    }
+	
+	@Primary
+	@Bean
+    public ChatClient chatClient(GoogleGenAiChatModel chatModel, VectorStore vectorStore, CustomRedisChatMemoryRepository chatMemoryRepository) {
 		
         return ChatClient.builder(chatModel)
                 .defaultSystem(aiProperties.getDefaultSystem())
@@ -41,10 +61,14 @@ public class AiConfig {
                 		.searchRequest(SearchRequest.builder()
                 				.topK(3).build())
                 		.build(),
-                		MessageChatMemoryAdvisor.builder(chatMemory)
+                		MessageChatMemoryAdvisor.builder(
+                				MessageWindowChatMemory.builder()
+                        		.chatMemoryRepository(chatMemoryRepository)
+                        		.maxMessages(20)
+                                .build()
+            					)
                 		.conversationId("default")
                         .order(1)
-//                        .scheduler(null)
                         .build()
         		)
                 .build();
@@ -56,14 +80,14 @@ public class AiConfig {
                 .apiKey(aiProperties.getApiKey())
                 .build();
     }
- // 1. 대화 저장소 빈 등록 (Memory 상에 저장)
+  
     @Bean
     public InMemoryChatMemoryRepository chatMemoryRepository() {
         return new InMemoryChatMemoryRepository();
     }
- // 2. ChatMemory 인터페이스 구현체 등록
+    
     @Bean
-    public ChatMemory chatMemory(InMemoryChatMemoryRepository repository) {
+    public ChatMemory chatMemory(CustomRedisChatMemoryRepository repository) {
         // MessageWindowChatMemory는 최근 N개의 대화만 유지하는 윈도우 방식을 지원합니다.
         return MessageWindowChatMemory.builder()
         		.chatMemoryRepository(repository)

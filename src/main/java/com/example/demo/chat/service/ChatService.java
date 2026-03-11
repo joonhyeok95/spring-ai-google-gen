@@ -1,18 +1,20 @@
 package com.example.demo.chat.service;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 
 @Service
-@RequiredArgsConstructor
 public class ChatService {
 
     private final ChatClient chatClient;
     
+	// 생성자를 직접 작성하여 주입할 빈의 이름을 명시합니다.
+    public ChatService(@Qualifier("chatClientSimple") ChatClient chatClient) {
+        this.chatClient = chatClient;
+    }
     public String generateResponse(String message) {
         // 3. Fluent API 방식으로 호출 (call().content() 사용)
         return chatClient.prompt()
@@ -22,7 +24,6 @@ public class ChatService {
     }
 
 	public Flux<String> askStream(String chatId, String message) {
-		// TODO Auto-generated method stub
 		return chatClient.prompt()
 	            .user(message)
 	            .advisors(advisor -> advisor.param("chat_memory_conversation_id", chatId))
