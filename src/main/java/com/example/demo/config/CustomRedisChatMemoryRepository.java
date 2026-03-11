@@ -38,14 +38,14 @@ public class CustomRedisChatMemoryRepository implements ChatMemoryRepository {
 	@Override
 	public List<Message> findByConversationId(String conversationId) {
 		String json = (String) redisTemplate.opsForValue().get(KEY_PREFIX + conversationId);
-		System.out.println("DEBUG: [GET] ID: " + conversationId + ", Found: " + (json != null ? "JSON 있음" : "JSON 없음"));
+//		System.out.println("DEBUG: [GET] ID: " + conversationId + ", Found: " + (json != null ? "JSON 있음" : "JSON 없음"));
 		
 	    if (json == null) return new ArrayList<>();
 	    try {
 	    	List<MessageDto> dtos = objectMapper.readValue(json, new TypeReference<List<MessageDto>>() {});
 	        return dtos.stream().map(MessageDto::toModel).collect(Collectors.toList());
 	    } catch (Exception e) {
-	        System.err.println("DEBUG: [DESERIALIZATION ERROR] " + e.getMessage());
+//	        System.err.println("DEBUG: [DESERIALIZATION ERROR] " + e.getMessage());
 	        return new ArrayList<>();
 	    }
 	}
@@ -58,7 +58,7 @@ public class CustomRedisChatMemoryRepository implements ChatMemoryRepository {
 	        String json = objectMapper.writeValueAsString(dtos);
 	        redisTemplate.opsForValue().set(KEY_PREFIX + conversationId, json);
 	        
-	        System.out.println("DEBUG: [SAVE SUCCESS] ID: " + conversationId + " - Size: " + messages.size());
+//	        System.out.println("DEBUG: [SAVE SUCCESS] ID: " + conversationId + " - Size: " + messages.size());
 	    } catch (Exception e) {
 	        throw new RuntimeException("Redis Save Error", e);
 	    }

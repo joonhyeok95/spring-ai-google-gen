@@ -4,9 +4,9 @@ package com.example.demo.agent;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.agent.route.IntentClassifier;
+import com.example.demo.agent.service.ChatService;
+import com.example.demo.agent.service.RagChatService;
 import com.example.demo.agent.service.SqlAgentService;
-import com.example.demo.chat.service.ChatService;
-import com.example.demo.rag.service.RagChatService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

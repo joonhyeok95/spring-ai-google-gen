@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.rag.service.IngestionService;
+import com.example.demo.agent.service.IngestionService;
 
 import reactor.core.publisher.Mono;
 

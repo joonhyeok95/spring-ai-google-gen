@@ -1,4 +1,4 @@
-package com.example.demo.rag.service;
+package com.example.demo.agent.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,43 +20,9 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class RagChatService {
 
- // Builder를 주입받아 필요할 때마다 ChatClient를 찍어냅니다.
-    private final ChatClient.Builder chatClientBuilder;
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
 
-    public String ask(String message) {
-    	
-    	SearchRequest searchRequest = SearchRequest.builder()
-    	        .topK(4)                // 가장 유사한 문서 4개 추출
-//    	        .similarityThreshold(0.5) // 유사도 70% 이상만 추출 (0.0 ~ 1.0)
-    	        .query(message)
-    	        .build();
-    	
-    	List<Document> docs = vectorStore.similaritySearch(searchRequest);
-		String context = docs.stream()
-                .map(Document::getText)
-                .collect(Collectors.joining("\n\n"));
-//        log.info("검색된 문서:{}", context);
-    	String ragPromptText = """
-    		    아래의 '참고 정보'를 바탕으로 질문에 답하세요. 
-    		    만약 참고 정보에 답이 없다면 "문서에 해당 내용이 없습니다"라고 답하세요.
-    		    절대 당신이 원래 알고 있는 지식으로 답하지 마세요.
-    		    
-    		    참고 정보:
-    		    {context}
-    		    """;
-        // chatClientBuilder 시 advisor 를 쓰면 프롬프트템플릿에서 
-    	// 	Missing variable names are: [question, context] 에러나서 직접 주입함.
-    	
-    	return chatClientBuilder
-    	        .build()
-    	        .prompt()
-    	        .system(sp -> sp.text(ragPromptText).param("context", context))
-    	        .user(message + "위 내용을 바탕으로 대답해줘.")
-    	        .call()
-    	        .content();
-    }
     public Flux<String> askStream(String chatId, String message) {
         // 1. 유사 문서 검색 (Blocking 작업을 Flux 흐름으로 변환)
         return Mono.fromCallable(() -> {
@@ -88,15 +54,6 @@ public class RagChatService {
                             .user(message) 
                             .stream()
                             .content();
-                    // 3. ChatClient 스트리밍 호출
-//                    return chatClientBuilder
-//                            .build()
-//                            .prompt()
-//            	            .advisors(advisor -> advisor.param("chat_memory_conversation_id", chatId))
-//                            .system(sp -> sp.text(ragPromptText).param("context", context))
-//                            .user(message + " 위 내용을 바탕으로 대답해줘.")
-//                            .stream() // call() 대신 stream() 사용!
-//                            .content();
                 });
     }
 }

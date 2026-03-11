@@ -1,4 +1,4 @@
-package com.example.demo.chat.service;
+package com.example.demo.agent.service;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,18 +11,12 @@ public class ChatService {
 
     private final ChatClient chatClient;
     
-	// 생성자를 직접 작성하여 주입할 빈의 이름을 명시합니다.
+	// ChatModel 을 선택할 수 있도록 chatClient 빈을 여러개 생성함.
+    //  여기선 vector 설정이 해지된 ChatClient
     public ChatService(@Qualifier("chatClientSimple") ChatClient chatClient) {
         this.chatClient = chatClient;
     }
-    public String generateResponse(String message) {
-        // 3. Fluent API 방식으로 호출 (call().content() 사용)
-        return chatClient.prompt()
-                .user(message)
-                .call()
-                .content();
-    }
-
+    
 	public Flux<String> askStream(String chatId, String message) {
 		return chatClient.prompt()
 	            .user(message)
