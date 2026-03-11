@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.example.demo.agent.service.ChatService;
+import com.example.demo.agent.service.GeneralAgentService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -17,7 +17,7 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class ChatWebController {
 	
-    private final ChatService chatService;
+    private final GeneralAgentService chatService;
 
     @GetMapping
     public String chatPage() {

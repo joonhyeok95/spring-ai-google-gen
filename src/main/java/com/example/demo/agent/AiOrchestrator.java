@@ -4,7 +4,7 @@ package com.example.demo.agent;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.agent.route.IntentClassifier;
-import com.example.demo.agent.service.ChatService;
+import com.example.demo.agent.service.GeneralAgentService;
 import com.example.demo.agent.service.RagChatService;
 import com.example.demo.agent.service.SqlAgentService;
 
@@ -19,7 +19,7 @@ public class AiOrchestrator {
     private final IntentClassifier intentClassifier;
     private final SqlAgentService sqlAgentService; // DB 검색 서비스
     private final RagChatService ragAgentService; // RAG 검색 서비스
-    private final ChatService chatAgentService; // LLM 검색 서비스
+    private final GeneralAgentService chatAgentService; // LLM 검색 서비스
     
     public Flux<String> handle(String chatId, String userQuery) {
         return intentClassifier.classify(userQuery)
