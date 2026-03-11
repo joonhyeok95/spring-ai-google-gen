@@ -5,6 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/aidb
     username: myuser
     password: mypassword
+    driver-class-name: org.postgresql.Driver
   ai:
     vectorstore:
       pgvector:
@@ -16,8 +17,33 @@ spring:
       embedding:
         options:
           model: all-minilm
+    google:
+      genai:
+        # spring AI 1.1.2>채팅모델>Google GenAI 규격인데 동작안함
+        api-key: ${GOOGLE_API_KEY:missing_key}
+        chat:
+          options:
+            model: gemini-3.1-flash-lite-preview
+        # spring AI 1.1.2>임베딩모델>Google GenAI 규격인데 동작안함
+        embedding:
+          api-key: ${GOOGLE_API_KEY:missing_key}
+          text:
+            options:
+              model: gemini-embedding-001 # 3072 지원함
+              task-type: RETRIEVAL_DOCUMENT # 문서 저장 시
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      connect-timeout: 2000 # 2초
 # 왜인지 gemenai 가 configuration 이 안맞아서 custom 으로함
 ai:
   api-key: ${GOOGLE_API_KEY:missing_key}
   model: gemini-3.1-flash-lite-preview # 3.1-flash-lite-preview가 안될 경우를 대비해 안정 버전 권장
   default-system: "너는 20년 경력의 시니어 개발자야. 친절하고 간결하게 대답해줘."
+  embed-model: gemini-embedding-001
+
+logging:
+  level:
+    root: INFO #DEBUG
+    
