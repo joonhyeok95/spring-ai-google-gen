@@ -30,7 +30,7 @@
 </head>
 <body class="container py-5">
 
-<h2 class="mb-4 text-primary">📄 AI LLM 스트리밍 챗봇</h2>
+<h2 class="mb-4 text-primary">📄 Agent Routing 챗봇 [DB|RAG|LLM]</h2>
 
 <div id="chat-content" class="mb-3 d-flex flex-column">
     </div>
@@ -105,7 +105,7 @@
         chatContent.scrollTop = chatContent.scrollHeight;
 
         // 3. 스트리밍 요청
-        const url = `/chat/stream?chatId=${chatId}&message=${encodeURIComponent(message)}`;
+        const url = `/api/ai/chat?chatId=${chatId}&message=${encodeURIComponent(message)}`;
         const response = await fetch(url);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
