@@ -5,6 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/aidb
     username: myuser
     password: mypassword
+    driver-class-name: org.postgresql.Driver
   ai:
     vectorstore:
       pgvector:

@@ -54,6 +54,8 @@ dependencies {
     // spring-ai-redis 는 springboot 4.0.0 이상, 4.1.0-M1 이하 사용가능 
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    
     // 데이터베이스 드라이버
     runtimeOnly 'org.postgresql:postgresql'
     
