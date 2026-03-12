@@ -4,7 +4,12 @@
 (gradle repository 활성화로 바로 이용할 수 있음)  
 이전 채팅 기억은 Redis를 활용하고, 브라우저 localStorage에 채팅고유번호를 저장한다.  
 
- 
+## Model(Free)
+- Generate: gemini-3.1-flash-lite-preview
+- Embedding
+  - Google: gemini-embedding-001
+  - Ollama: all-minilm
+
 ## 화면1:Agent Routing 챗봇 [DB|RAG|LLM]
 - Agent Routing 을 활용하여 클라우드LLM, 데이터베이스질의, RAG 3가지 케이스를 자동으로 분류하여 답변한다.
 - http://localhost:8080/chat
@@ -26,6 +31,26 @@
 - Gradle: 8.14.4  
 - Redis: Redis-x64-3.0.504  
 - VectorDB: Postgresql(16.13-1) Vector 0.8.2
+
+## VectorDB Setting
+vector 확장 plugin 사용을 위해 초기 docker-compose up 후 필수로 실행해야함
+```
+-- db 접속
+docker exec -it pgvector_db psql -U myuser -d aidb
+
+-- DB 접속 후 실행
+CREATE EXTENSION vector;
+
+-- 설치 확인 (버전이 나오면 성공!)
+SELECT * FROM pg_extension WHERE extname = 'vector';
+```
+임베딩 모델 변경될 경우 vector 차원 변경
+```
+-- 1. 기존 데이터 전부 삭제 (차원이 다르면 검색이 안 되므로 어차피 지워야 함)
+DELETE FROM vector_store;
+-- 2. 이제 타입 변경 가능!
+ALTER TABLE vector_store ALTER COLUMN embedding TYPE vector(768);
+```
 
 ## 샘플 데이터: dvdrental 
 - https://neon.com/postgresql/postgresql-getting-started/postgresql-sample-database
