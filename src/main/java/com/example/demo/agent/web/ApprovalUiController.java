@@ -24,9 +24,9 @@ public class ApprovalUiController {
     private final ApprovalService approvalService;
 
     // 1. UI에서 이 엔드포인트를 열어두면 승인 요청이 올 때마다 알림이 뜸
-    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ApprovalRequest> stream() {
-        return approvalService.getApprovalStream();
+    @GetMapping(value = "/stream/{chatId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ApprovalRequest> stream(@PathVariable("chatId") String chatId) {
+        return approvalService.getApprovalStream(chatId);
     }
 
     // 2. UI 버튼 클릭 시 호출

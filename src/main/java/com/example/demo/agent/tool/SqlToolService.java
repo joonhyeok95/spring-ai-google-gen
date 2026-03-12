@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,16 @@ public class SqlToolService {
     private final ApprovalService approvalService;
 
     @Tool(description = "PostgreSQL 데이터베이스(aidb)에서 SQL 쿼리를 실행하여 결과를 반환합니다. 오류 발생 시 테이블 구조 힌트를 반환합니다.")
-    public String executeSqlQuery(String query) {
+    public String executeSqlQuery(String query, ToolContext toolContext) {
     	log.info("실행할 SQL: {}", query);
+    	// ⭐️ ToolContext에서 안전하게 chatId 추출
+        String chatId = (String) toolContext.getContext().get("chatId");
+        
     	// 1. 위험 쿼리 체크
         if (isDangerous(query)) {
             try {
                 // ApprovalService에서 생성된 Future를 60초간 대기 (Blocking call inside tool)
-                Boolean approved = approvalService.request(query)
+                Boolean approved = approvalService.request(chatId, query)
                         .get(60, TimeUnit.SECONDS);
 
                 if (Boolean.FALSE.equals(approved)) {

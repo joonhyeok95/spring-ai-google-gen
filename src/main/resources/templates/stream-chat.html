@@ -154,7 +154,7 @@
         }, 500);
     }
     // SSE 연결
-    const eventSource = new EventSource('/api/approvals/stream');
+    const eventSource = new EventSource('/api/approvals/stream/'+chatId);
 
     eventSource.onmessage = (event) => {
         const request = JSON.parse(event.data);
