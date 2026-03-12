@@ -1,9 +1,10 @@
 # spring-ai-google-gen
 본 프로그램은 google gemini 무료 Api를 사용함  
 임베딩 모델을 ollama 로 연동하였는데 local VRAM 한계(청크분리의 한계)로 gemini-embedd 로 변경함  
-(gradle repository 활성화로 바로 이용할 수 있음)
-이전 채팅 기억은 Redis를 활용하고, 브라우저 localStorage에 채팅고유번호를 저장한다.
+(gradle repository 활성화로 바로 이용할 수 있음)  
+이전 채팅 기억은 Redis를 활용하고, 브라우저 localStorage에 채팅고유번호를 저장한다.  
 
+ 
 ## 화면1:Agent Routing 챗봇 [DB|RAG|LLM]
 - Agent Routing 을 활용하여 클라우드LLM, 데이터베이스질의, RAG 3가지 케이스를 자동으로 분류하여 답변한다.
 - http://localhost:8080/chat
@@ -35,3 +36,4 @@
 - 각 영화 카테고리별로 총 매출(payment) 합계를 계산해줘
 - 이메일 주소가 'P'로 시작하는 고객들의 이름과 성을 나열해줘.
 
+<img width="1026" height="907" alt="image" src="https://github.com/user-attachments/assets/acbc527c-2eca-40fa-b2b6-3e781c6e5bb0" />
