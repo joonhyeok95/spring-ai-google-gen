@@ -46,4 +46,17 @@ ai:
 logging:
   level:
     root: INFO #DEBUG
+
     
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus" # prometheus 엔드포인트 포함
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        spring.ai.chat.client.calls: true # AI 호출 지표 상세화
