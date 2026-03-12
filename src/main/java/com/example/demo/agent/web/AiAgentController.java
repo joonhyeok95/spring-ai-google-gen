@@ -26,8 +26,8 @@ public class AiAgentController {
      * 해당 에이전트의 답변을 실시간 스트리밍으로 반환합니다.
      */
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> chat(@RequestParam(value = "message") String message) {
-        String chatId = "test";
+    public Flux<String> chat(@RequestParam(value = "chatId") String chatId, 
+    						@RequestParam(value = "message") String message) {
         return orchestrator.handle(chatId, message)
                 .doOnNext(token -> log.debug("발생 토큰: {}", token))
                 .doOnError(e -> log.error("스트리밍 중 에러 발생", e));

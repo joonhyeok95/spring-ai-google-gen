@@ -153,6 +153,34 @@
             }
         }, 500);
     }
+    // SSE 연결
+    const eventSource = new EventSource('/api/approvals/stream');
+
+    eventSource.onmessage = (event) => {
+        const request = JSON.parse(event.data);
+        if (request.id === "keep-alive") return;
+        
+        // 팝업이나 모달을 띄움
+        if (confirm(`[승인 요청] 쿼리: ${request.query}\n실행하시겠습니까?`)) {
+            fetch(`/api/approvals/${request.id}/respond?approved=true`, { method: 'POST' });
+        } else {
+            fetch(`/api/approvals/${request.id}/respond?approved=false`, { method: 'POST' });
+        }
+    };
+    // marked.js 등으로 텍스트를 렌더링할 때 차트 태그를 감지
+    function renderMessage(text) {
+        if (text.includes("[CHART_START]")) {
+            const chartDataRaw = text.split("[CHART_START]")[1].split("[CHART_END]")[0];
+            const chartConfig = JSON.parse(chartDataRaw);
+            
+            // Canvas 생성 후 Chart.js 실행
+            createChartElement(chartConfig);
+            
+            // 차트 태그는 화면에서 숨김 처리
+            return text.replace(/\[CHART_START\].*\[CHART_END\]/s, "(차트가 생성되었습니다)");
+        }
+        return marked.parse(text);
+    }
 </script>
 
 </body>
