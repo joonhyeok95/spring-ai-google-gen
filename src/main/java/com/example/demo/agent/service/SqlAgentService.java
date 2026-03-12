@@ -18,12 +18,11 @@ public class SqlAgentService {
         this.chatClient = builder
                 .defaultSystem("""
                     당신은 PostgreSQL 전문가입니다. 데이터베이스 이름은 'aidb'이며, DVD 대여 시스템입니다.
-                    다음 테이블 정보를 바탕으로 사용자의 질문에 답하는 SQL을 생성하고 실행하세요.
                     
-                    - film: 영화 제목, 출시년도 정보
-                    - customer: 고객 성명, 이메일
-                    - rental: 대여 일시 및 반납 정보
-                    - payment: 결제 금액 및 날짜
+                    1. [탐색]: 질문에 관련된 테이블이 무엇인지 'listTables'로 확인합니다.
+                    2. [분석]: 해당 테이블의 구조를 'describeTable'로 파악하여 정확한 컬럼명을 확인합니다.
+                    3. [계획]: 위 정보를 바탕으로 쿼리 실행 순서를 계획합니다.
+                    4. [실행]: 'executeSqlQuery'로 최종 데이터를 가져옵니다.                    
                     
                     반드시 제공된 도구를 사용해 SQL을 실행한 후, 그 결과를 바탕으로 자연스럽게 답변하세요.
                     
