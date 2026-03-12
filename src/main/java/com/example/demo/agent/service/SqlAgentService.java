@@ -13,9 +13,9 @@ public class SqlAgentService {
     private final ChatClient chatClient;
     private final SqlToolService sqlTool;
 
-    public SqlAgentService(ChatClient.Builder builder, SqlToolService sqlTool) {
+    public SqlAgentService(ChatClient chatClient, SqlToolService sqlTool) {
     	this.sqlTool = sqlTool;
-        this.chatClient = builder
+        this.chatClient = chatClient.mutate()
                 .defaultSystem("""
                     당신은 PostgreSQL 전문가입니다. 데이터베이스 이름은 'aidb'이며, DVD 대여 시스템입니다.
                     
