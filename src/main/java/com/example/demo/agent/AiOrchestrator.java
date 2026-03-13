@@ -3,6 +3,7 @@ package com.example.demo.agent;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.agent.collaboration.ChartCollaborationService;
 import com.example.demo.agent.route.IntentClassifier;
 import com.example.demo.agent.service.ChartAgentService;
 import com.example.demo.agent.service.GeneralAgentService;
@@ -21,14 +22,14 @@ public class AiOrchestrator {
     private final SqlAgentService sqlAgentService; // DB 검색 서비스
     private final RagChatService ragAgentService; // RAG 검색 서비스
     private final GeneralAgentService chatAgentService; // LLM 검색 서비스
-    private final ChartAgentService chartAgentService; // LLM 검색 서비스
+    private final ChartCollaborationService chartCollaborationService; // LLM 검색 서비스
     
     public Flux<String> handle(String chatId, String userQuery) {
         return intentClassifier.classify(userQuery)
             .flatMapMany(intent -> {
             	log.info("AI Routing 처리: {}", intent);
                 if(userQuery.contains("차트")){
-                	return chartAgentService.askStream(chatId, userQuery);
+                	return chartCollaborationService.createChartCollaborationStream(chatId, userQuery);
                 }
                 if (intent.contains("DB")) {
                 	return sqlAgentService.askStream(chatId, userQuery);
