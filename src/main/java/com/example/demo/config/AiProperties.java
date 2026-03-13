@@ -24,6 +24,8 @@ public class AiProperties {
         private Resource general;
         private Resource rag;
         private Resource sql;
+        private Resource chart;
+        private Resource dataScientist;
     }
 }
 

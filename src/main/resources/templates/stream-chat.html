@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         #chat-content { height: 600px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fdfdfd; border-radius: 8px; }
         .user-msg { background: #e3f2fd; padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: right; }
@@ -45,8 +46,74 @@
     let typingQueue = []; // 글자 저장 창고
     let isTyping = false; // 현재 타이핑 중인지 확인
 
+    // 2. 차트 데이터를 찾아 실제 Chart.js로 변환하는 함수
+    function checkForChartData(element, fullText) {
+        console.log("전체 텍스트 출력해보기: ", fullText);
+        const startTag = "[CHART_DATA_START]";
+        const endTag = "[CHART_DATA_END]";
+        if (!fullText.includes(startTag) || !fullText.includes(endTag)) {
+            console.log("차트 태그가 완성되지 않았습니다.");
+            return;
+        }
+        try {
+            const parts = fullText.split(startTag);
+            const chartPart = parts[1].split(endTag);
+            const jsonStr = chartPart[0].trim();
+            
+            console.log("추출된 JSON 문자열:", jsonStr);
+
+            // 2. JSON 파싱
+            const config = JSON.parse(jsonStr);
+
+            // 3. 텍스트 정제: 차트 데이터 부분을 제외한 나머지 텍스트만 마크다운 렌더링
+            const cleanText = parts[0] + (chartPart[1] || "");
+            element.innerHTML = marked.parse(cleanText);
+
+            // 4. 차트가 들어갈 캔버스 생성
+            const canvasId = 'chart-' + Math.random().toString(36).substring(2, 11);
+            const chartWrapper = document.createElement('div');
+            chartWrapper.style.cssText = "position: relative; height: 300px; width: 100%; margin: 20px 0; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);";
+            chartWrapper.innerHTML = `<canvas id="${canvasId}"></canvas>`;
+            
+            // ai-msg 내부에 추가
+            element.appendChild(chartWrapper);
+
+            // 5. Chart.js 실행 (약간의 지연을 주어 DOM 안착 보장)
+            setTimeout(() => {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                new Chart(ctx, {
+                    type: config.type || 'bar',
+                    data: {
+                        labels: config.labels,
+                        datasets: [{
+                            label: config.title,
+                            data: config.values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            fill: config.type === 'line' // 라인 차트일 경우 채우기 여부
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+                console.log("✅ 차트 렌더링 성공!");
+            }, 50);
+
+        } catch (e) {
+            console.error("❌ 차트 렌더링 중 에러 발생:", e);
+            // 에러 발생 시 원본 텍스트라도 보여줌
+            element.innerHTML = marked.parse(fullText);
+        }        
+    }
+        
     // 1. 타이핑 효과를 내는 함수
-    function startTyping(element, container, context) {
+    function startTyping(element, container, context, aiMsgDiv) {
         if (isTyping) return;
         isTyping = true;
 
@@ -65,6 +132,9 @@
             } else if (context.isFinished) { // ✅ 수정 2: 데이터 공급이 끝났고 큐도 비었으면 종료
                 clearInterval(interval);
                 isTyping = false;
+                
+                // ✅ 타이핑 종료 후 차트 데이터가 있는지 확인 및 렌더링
+                checkForChartData(element, context.accumulatedText);
             }
         }, 20); // 👈 마크다운 렌더링 부하를 고려해 20~30ms 추천
     }    
@@ -119,7 +189,7 @@
         typingQueue = [];
         
         // 타이핑 엔진 가동 (컨텍스트 전달)
-        startTyping(textSpan, chatContent, currentChatContext);
+        startTyping(textSpan, chatContent, currentChatContext, aiDiv);
         
         while (true) {
             const { done, value } = await reader.read();
@@ -154,7 +224,7 @@
         }, 500);
     }
     // SSE 연결
-    const eventSource = new EventSource('/api/approvals/stream/'+chatId);
+    const eventSource = new EventSource(`/api/approvals/stream/${chatId}?t=${new Date().getTime()}`);
 
     eventSource.onmessage = (event) => {
         const request = JSON.parse(event.data);
@@ -167,20 +237,6 @@
             fetch(`/api/approvals/${request.id}/respond?approved=false`, { method: 'POST' });
         }
     };
-    // marked.js 등으로 텍스트를 렌더링할 때 차트 태그를 감지
-    function renderMessage(text) {
-        if (text.includes("[CHART_START]")) {
-            const chartDataRaw = text.split("[CHART_START]")[1].split("[CHART_END]")[0];
-            const chartConfig = JSON.parse(chartDataRaw);
-            
-            // Canvas 생성 후 Chart.js 실행
-            createChartElement(chartConfig);
-            
-            // 차트 태그는 화면에서 숨김 처리
-            return text.replace(/\[CHART_START\].*\[CHART_END\]/s, "(차트가 생성되었습니다)");
-        }
-        return marked.parse(text);
-    }
 </script>
 
 </body>
