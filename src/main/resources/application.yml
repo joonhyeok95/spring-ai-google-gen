@@ -48,6 +48,8 @@ ai:
     rag: classpath:prompts/rag.st
     sql: classpath:prompts/sql.st
     chart: classpath:prompts/chart.st
+    digital-marketer: classpath:prompts/digital-marketer.st
+    data-scientist: classpath:prompts/data-scientist.st
         
 logging:
   level:

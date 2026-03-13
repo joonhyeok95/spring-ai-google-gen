@@ -10,23 +10,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        #chat-content { height: 600px; overflow-y: auto; border: 1px solid #ddd; padding: 20px; background: #fdfdfd; border-radius: 8px; }
-        .user-msg { background: #e3f2fd; padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: right; }
-        .ai-msg { background: #f1f3f4; padding: 10px; border-radius: 10px; margin-bottom: 10px; white-space: pre-wrap; }
-        .cursor { display: inline-block; width: 8px; height: 18px; background: #333; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        
-        /* chat.html 내부 <style>에 추가 */
-        .ai-msg { 
-            line-height: 1.6; 
-            font-size: 0.95rem;
-            padding: 15px;
-        }
-        .ai-msg h1, .ai-msg h2, .ai-msg h3 { margin-top: 15px; font-weight: bold; }
-        .ai-msg ul, .ai-msg ol { padding-left: 20px; }
-        .ai-msg code { background: #f0f0f0; padding: 2px 4px; border-radius: 4px; font-family: 'Courier New', monospace; }
-        .ai-msg pre { background: #2d2d2d; color: #ccc; padding: 15px; border-radius: 8px; overflow-x: auto; }
-        .ai-msg blockquote { border-left: 4px solid #ddd; padding-left: 15px; color: #666; font-style: italic; }
+        /* 전체 레이아웃 조정 */
+            body { background-color: #f8f9fa; padding-bottom: 100px; } /* 입력창 공간 확보 */
+            
+            /* 채팅창 스타일 */
+            #chat-content { 
+                height: calc(100vh - 250px); /* 화면 높이에 맞게 조절 */
+                overflow-y: auto; 
+                border: 1px solid #e9ecef; 
+                padding: 20px; 
+                background: #ffffff; 
+                border-radius: 12px;
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            }
+
+            /* 하단 고정 입력바 */
+            .input-wrapper {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: #ffffff;
+                padding: 20px;
+                box-shadow: 0 -5px 10px rgba(0,0,0,0.05);
+                z-index: 1000;
+            }
+            .input-container { max-width: 900px; margin: 0 auto; }
+
+            /* AI 메시지 내 차트 카드 스타일 */
+            .chart-card {
+                background: #ffffff;
+                border: 1px solid #edf2f7;
+                border-radius: 16px;
+                padding: 20px;
+                margin: 15px 0;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                position: relative;
+                height: 320px; /* 고정 높이 */
+            }
+
+            .user-msg { background: #007bff; color: white; padding: 12px 18px; border-radius: 18px 18px 0 18px; margin-bottom: 15px; align-self: flex-end; max-width: 80%; }
+            .ai-msg { background: #f1f3f4; color: #333; padding: 15px; border-radius: 18px 18px 18px 0; margin-bottom: 15px; align-self: flex-start; max-width: 85%; }
     </style>
 </head>
 <body class="container py-5">

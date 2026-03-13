@@ -26,6 +26,8 @@ public class AiProperties {
         private Resource sql;
         private Resource chart;
         private Resource dataScientist;
+        private Resource digitalMarketer;
+        
     }
 }
 
