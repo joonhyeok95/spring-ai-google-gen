@@ -42,7 +42,9 @@ ai:
   model: gemini-3.1-flash-lite-preview # 3.1-flash-lite-preview가 안될 경우를 대비해 안정 버전 권장
   default-system: "너는 20년 경력의 시니어 개발자야. 친절하고 간결하게 대답해줘."
   embed-model: gemini-embedding-001
-
+  prompts:
+    intent-route: classpath:prompts/intent-route.st
+    
 logging:
   level:
     root: INFO #DEBUG

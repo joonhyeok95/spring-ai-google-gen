@@ -4,21 +4,29 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.config.AiProperties;
+
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Service
+@RequiredArgsConstructor
 public class IntentClassifier {
-    private final ChatClient chatClient;
 
-    public IntentClassifier(@Qualifier("chatClientSimple") ChatClient chatClient) {
-    	this.chatClient = chatClient.mutate()
-                .defaultSystem("사용자의 질문을 분석하여 [DB, RAG, GENERAL] 중 하나로만 대답하세요. " +
-                        "데이터베이스 조회(영화, 대여, 고객)는 DB, " +
-                        "문서 기반 지식 검색은 RAG, 나머지는 GENERAL입니다.")
+    private final ChatClient.Builder builder; // intent 처럼 의도구분에만 사용하는 곳에서 builder 패턴을 활용하자
+    private final AiProperties prompts;
+	
+	@Qualifier("chatClientSimple")
+    private ChatClient chatClient;
+	
+	@PostConstruct
+    public void init() {
+        this.chatClient = builder
+                .defaultSystem(prompts.getPrompts().getIntentRoute())
                 .build();
-    }
-
+	}
     public Mono<String> classify(String userQuery) {
     	return Mono.fromCallable(() -> 
 	        chatClient.prompt().user(userQuery).call().content().trim().toUpperCase()
