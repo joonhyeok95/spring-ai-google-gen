@@ -64,11 +64,19 @@ public class ApprovalService {
 
     // UI에서 구독할 스트림 (SSE 엔드포인트용)
     public Flux<ApprovalRequest> getApprovalStream(String chatId) {
-        // Sinks를 가져오거나 없으면 새로 생성
-        Sinks.Many<ApprovalRequest> sink = userSinks.computeIfAbsent(chatId, 
-            k -> Sinks.many().multicast().onBackpressureBuffer());
-        
-        // 하트비트 데이터 생성 (에러 방지를 위해 ID 위주로 최소화)
+        // 1. 기존에 해당 chatId로 관리되던 Sink가 있다면 명시적으로 종료 처리
+        Sinks.Many<ApprovalRequest> oldSink = userSinks.get(chatId);
+        if (oldSink != null) {
+            log.info("🧹 ChatId: {} 의 기존 세션을 정리하고 새로운 연결을 준비합니다.", chatId);
+            // 기존 스트림을 닫아 브라우저/서버 자원을 정리
+            oldSink.tryEmitComplete(); 
+        }
+
+        // 2. 무조건 새로운 Sink를 생성하여 맵에 저장 (기존 유령 Sink 덮어쓰기)
+        Sinks.Many<ApprovalRequest> newSink = Sinks.many().multicast().onBackpressureBuffer();
+        userSinks.put(chatId, newSink);
+
+        // 3. 하트비트 설정 (연결 유지용)
         Flux<ApprovalRequest> heartbeat = Flux.interval(java.time.Duration.ofSeconds(15))
                 .map(i -> ApprovalRequest.builder()
                         .id("keep-alive")
@@ -77,16 +85,18 @@ public class ApprovalService {
                         .requestedAt(LocalDateTime.now())
                         .build());
 
-        return sink.asFlux()
-                .doOnSubscribe(sub -> log.info("👀 [SSE] ChatId: {} 구독 시작", chatId))
+        // 4. 새로운 Sink의 Flux 반환
+        return newSink.asFlux()
+                .doOnSubscribe(sub -> log.info("👀 [SSE] ChatId: {} 새로운 구독 시작 (신규 Sink 할당)", chatId))
                 .doOnCancel(() -> {
-                    log.info("❌ [SSE] ChatId: {} 구독 종료", chatId);
-                    // 구독 종료 시 맵에서 제거하면 메모리 누수를 방지할 수 있습니다.
-                    // userSinks.remove(chatId); 
+                    log.info("❌ [SSE] ChatId: {} 구독 취소", chatId);
+                    // 구독 취소 시 해당 chatId 전용 Sink를 맵에서 제거하여 메모리 누수 방지
+                    userSinks.remove(chatId);
                 })
                 .mergeWith(heartbeat)
                 .onErrorResume(e -> {
-                    log.error("❌ SSE 스트림 에러 발생: {}", e.getMessage());
+                    log.error("❌ SSE 스트림 에러 발생 (ChatId: {}): {}", chatId, e.getMessage());
+                    userSinks.remove(chatId); // 에러 시에도 정리
                     return Flux.empty();
                 });
     }
