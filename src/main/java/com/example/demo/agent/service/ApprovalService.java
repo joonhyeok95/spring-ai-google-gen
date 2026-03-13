@@ -67,7 +67,7 @@ public class ApprovalService {
         // Sinks를 가져오거나 없으면 새로 생성
         Sinks.Many<ApprovalRequest> sink = userSinks.computeIfAbsent(chatId, 
             k -> Sinks.many().multicast().onBackpressureBuffer());
-
+        
         // 하트비트 데이터 생성 (에러 방지를 위해 ID 위주로 최소화)
         Flux<ApprovalRequest> heartbeat = Flux.interval(java.time.Duration.ofSeconds(15))
                 .map(i -> ApprovalRequest.builder()

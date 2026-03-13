@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class AiConfig {
 	private final AiProperties aiProperties;
 
+	@Primary
 	@Bean
     public ChatClient chatClientSimple(GoogleGenAiChatModel chatModel, CustomRedisChatMemoryRepository chatMemoryRepository) {
 		
@@ -51,9 +52,9 @@ public class AiConfig {
                 .build();
     }
 	
-	@Primary
+	// VectorDB 연결 클라이언트
 	@Bean
-    public ChatClient chatClient(GoogleGenAiChatModel chatModel, VectorStore vectorStore, CustomRedisChatMemoryRepository chatMemoryRepository) {
+    public ChatClient chatClientVector(GoogleGenAiChatModel chatModel, VectorStore vectorStore, CustomRedisChatMemoryRepository chatMemoryRepository) {
 		
         return ChatClient.builder(chatModel)
                 .defaultSystem(aiProperties.getDefaultSystem())

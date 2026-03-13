@@ -44,7 +44,10 @@ ai:
   embed-model: gemini-embedding-001
   prompts:
     intent-route: classpath:prompts/intent-route.st
-    
+    general: classpath:prompts/general.st
+    rag: classpath:prompts/rag.st
+    sql: classpath:prompts/sql.st
+        
 logging:
   level:
     root: INFO #DEBUG

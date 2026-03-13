@@ -21,8 +21,9 @@ public class AiProperties {
     @Setter
     public static class Prompts {
         private Resource intentRoute;
-        private Resource searchAgent;
-        private Resource summary;
+        private Resource general;
+        private Resource rag;
+        private Resource sql;
     }
 }
 
