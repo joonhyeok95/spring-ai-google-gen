@@ -35,7 +35,10 @@ public class AiOrchestrator {
                 	return chartCollaborationService.createChartCollaborationStream(chatId, userQuery);
                 }
                 if (intent.contains("CALENDAR")) {
-                	return calendarAgentService.askStream(userQuery, null);
+                	return calendarAgentService.askStreamCalendar(userQuery, "dkttkemf@gmail.com");
+                }
+                if (intent.contains("MAIL")) {
+                	return calendarAgentService.askStreamEmail(userQuery, "dkttkemf@gmail.com");
                 }
                 if (intent.contains("DB")) {
                 	return sqlAgentService.askStream(chatId, userQuery);
