@@ -41,6 +41,12 @@ dependencies {
     implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
     implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
     
+    // MCP
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-client-webflux'
+    // implementation 'org.springframework.ai:spring-ai-starter-mcp-server'
+    implementation("io.modelcontextprotocol.sdk:mcp:1.1.0")
+    
+    
     // Ollama
     // implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
     
