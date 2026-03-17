@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.agent.collaboration.ChartCollaborationService;
 import com.example.demo.agent.collaboration.DigitalMarketerCollaborationService;
 import com.example.demo.agent.route.IntentClassifier;
-import com.example.demo.agent.service.ChartAgentService;
+import com.example.demo.agent.service.CalendarAgentService;
 import com.example.demo.agent.service.GeneralAgentService;
 import com.example.demo.agent.service.RagChatService;
 import com.example.demo.agent.service.SqlAgentService;
@@ -25,6 +25,7 @@ public class AiOrchestrator {
     private final GeneralAgentService chatAgentService; // LLM 검색 서비스
     private final ChartCollaborationService chartCollaborationService; // 
     private final DigitalMarketerCollaborationService digitalMarketerCollaborationService; // 
+    private final CalendarAgentService calendarAgentService;
     
     public Flux<String> handle(String chatId, String userQuery) {
         return intentClassifier.classify(userQuery)
@@ -32,6 +33,9 @@ public class AiOrchestrator {
             	log.info("AI Routing 처리: {}", intent);
                 if(userQuery.contains("차트")){
                 	return chartCollaborationService.createChartCollaborationStream(chatId, userQuery);
+                }
+                if (intent.contains("CALENDAR")) {
+                	return calendarAgentService.askStream(userQuery, null);
                 }
                 if (intent.contains("DB")) {
                 	return sqlAgentService.askStream(chatId, userQuery);

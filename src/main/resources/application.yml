@@ -31,6 +31,35 @@ spring:
             options:
               model: gemini-embedding-001 # 3072 지원함
               task-type: RETRIEVAL_DOCUMENT # 문서 저장 시
+    mcp:
+      client:
+        enabled: true
+        initialized: true
+        type: ASYNC
+        request-timeout: 2s
+        toolcallback:
+          enabled: true
+        streamable-http:
+          connections:
+            google-calendar:
+              url: http://localhost:8000
+              endpoint: /mcp
+#        stdio:
+#          root-change-notification: true
+#          connections:
+#            server1:
+#              command: /path/to/server
+#              args:
+#                - --port=8080
+#                - --mode=production
+#              env:
+#                API_KEY: your-api-key
+#                DEBUG: "true"
+#         claude desktop 형식으로 사용할 때
+#          servers-configuration: classpath:mcp-servers.json
+
+  jackson:
+    default-property-inclusion: non_null
   data:
     redis:
       host: localhost
@@ -51,10 +80,15 @@ ai:
     digital-marketer: classpath:prompts/digital-marketer.st
     data-scientist: classpath:prompts/data-scientist.st
         
+#logging:
+#  level:
+#    root: INFO #DEBUG
+
 logging:
   level:
-    root: INFO #DEBUG
-
+    org.springframework.ai.chat.client.advisor.*: DEBUG
+    jm.kr.spring.ai.playground.service.*: DEBUG
+    org.springframework.ai.mcp: DEBUG
     
 management:
   endpoints:
