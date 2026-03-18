@@ -8,6 +8,7 @@ import com.example.demo.agent.collaboration.DigitalMarketerCollaborationService;
 import com.example.demo.agent.route.IntentClassifier;
 import com.example.demo.agent.service.CalendarAgentService;
 import com.example.demo.agent.service.GeneralAgentService;
+import com.example.demo.agent.service.NotionAgentService;
 import com.example.demo.agent.service.RagChatService;
 import com.example.demo.agent.service.SqlAgentService;
 
@@ -26,6 +27,7 @@ public class AiOrchestrator {
     private final ChartCollaborationService chartCollaborationService; // 
     private final DigitalMarketerCollaborationService digitalMarketerCollaborationService; // 
     private final CalendarAgentService calendarAgentService;
+    private final NotionAgentService notionAgentService;
     
     public Flux<String> handle(String chatId, String userQuery) {
         return intentClassifier.classify(userQuery)
@@ -33,6 +35,9 @@ public class AiOrchestrator {
             	log.info("AI Routing 처리: {}", intent);
                 if(userQuery.contains("차트")){
                 	return chartCollaborationService.createChartCollaborationStream(chatId, userQuery);
+                }
+                if(userQuery.contains("노션")){
+                	return notionAgentService.process(chatId, "dkttkemf@gmail.com");
                 }
                 if (intent.contains("CALENDAR")) {
                 	return calendarAgentService.askStreamCalendar(userQuery, "dkttkemf@gmail.com");

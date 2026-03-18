@@ -36,7 +36,7 @@ spring:
         enabled: true
         initialized: true
         type: ASYNC
-        request-timeout: 2s
+        request-timeout: 5s
         toolcallback:
           enabled: true
         streamable-http:
@@ -44,7 +44,7 @@ spring:
             google-calendar:
               url: http://localhost:8000
               endpoint: /mcp
-#        stdio:
+        stdio:
 #          root-change-notification: true
 #          connections:
 #            server1:
@@ -57,7 +57,16 @@ spring:
 #                DEBUG: "true"
 #         claude desktop 형식으로 사용할 때
 #          servers-configuration: classpath:mcp-servers.json
-
+          connections:
+            notion:
+              command: C:\\Program Files\\nodejs\\npx.cmd # windows, linux는 npx 바로 써도됨
+              args:
+                - "-y"
+                - "@notionhq/notion-mcp-server"
+              env:
+                NOTION_TOKEN: ${NOTION_API_KEY}
+                # 핵심: npx가 내부적으로 node를 찾을 수 있도록 PATH를 직접 넘겨줍니다.
+                PATH: "C:\\Program Files\\nodejs\\;%PATH%"
   jackson:
     default-property-inclusion: non_null
   data:
@@ -79,7 +88,11 @@ ai:
     chart: classpath:prompts/chart.st
     digital-marketer: classpath:prompts/digital-marketer.st
     data-scientist: classpath:prompts/data-scientist.st
-        
+#  notion:
+#    client-id:
+#    client_secret:
+#    redirect-uri:
+      
 #logging:
 #  level:
 #    root: INFO #DEBUG
